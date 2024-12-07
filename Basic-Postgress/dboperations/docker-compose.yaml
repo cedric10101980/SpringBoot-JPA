@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5432/testdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: test
+      SPRING_FLYWAY_URL: jdbc:postgresql://127.0.0.1:5432/testdb
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: test
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres_data:
