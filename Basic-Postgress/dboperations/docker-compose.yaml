@@ -14,7 +14,7 @@ services:
       SPRING_FLYWAY_USER: postgres
       SPRING_FLYWAY_PASSWORD: test
     ports:
-      - "8081:8081"
+      - "8081:8080"
     depends_on:
       - postgres
       - bootstrap
