@@ -14,16 +14,7 @@ COPY src src
 # Make the Gradle wrapper executable
 RUN chmod +x gradlew
 
-
-COPY zscaler.cer .
-
-# Install ca-certificates package
-RUN apt-get update && apt-get install -y ca-certificates
-
-# Change permissions of the .cer file to be readable by all users
-RUN chmod a+r zscaler.cer
-
-# Convert the .cer file to .pem
+# Copy the Zscaler certificate
 COPY zscaler.cer /usr/local/share/ca-certificates/zscaler.crt
 
 # Install ca-certificates package and update the certificate authorities
@@ -36,12 +27,10 @@ RUN keytool -importcert -file /usr/local/share/ca-certificates/zscaler.crt -alia
 RUN ./gradlew build
 
 # Use an official OpenJDK image to run the application
-FROM openjdk:17-buster
+FROM openjdk:17-jdk-slim
 
 # Set the working directory
 WORKDIR /app
-
-
 
 # Copy the built application from the build stage
 COPY --from=build /app/build/libs/*.jar app.jar
