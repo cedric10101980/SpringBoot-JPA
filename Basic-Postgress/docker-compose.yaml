@@ -2,9 +2,10 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: cedric10101980/postgressapp:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     container_name: springboot_app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/testdb
