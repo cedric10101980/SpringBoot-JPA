@@ -25,10 +25,10 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./Basic-MongoDB
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: cedric10101980/basic-mongodb-app:1.0.0
+          tags: cedric10101980/basic-mongodb-app:latest
 
       - name: Log out from Docker Hub
         run: docker logout
