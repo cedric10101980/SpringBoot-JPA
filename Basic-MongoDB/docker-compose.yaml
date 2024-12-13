@@ -1,0 +1,47 @@
+version: '2.2'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb-data:/data/db/
+      - mongodb-log:/var/log/mongodb/
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    command: ["mongod", "--bind_ip_all"] # Allow connections from all IPs
+    ports:
+      - "27017:27017"
+    networks:
+      - mongodb_network
+  app:
+    image: cedric10101980/basic-mongodb-app:1.0.0
+    container_name: app
+    platform: linux/amd64
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:mongo@mongodb:27017/mongo-db
+    depends_on:
+      - mongodb
+    networks:
+      - mongodb_network
+volumes:
+  mongodb-data:
+    driver: local
+    name: mongo-data
+  mongodb-log:
+    driver: local
+    name: mongo-log
+
+networks:
+  mongodb_network:
+    driver: bridge
+    name: mongo-network
+
+
