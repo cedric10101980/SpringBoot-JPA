@@ -27,7 +27,7 @@ Contains Projects for connecting Springboot to PostGress  DB etc
 - Extract the downloaded zip file and open it in IntelliJ IDEA.
 
 ## 2. Configure Flyway for Database Versioning
-- Open `src/main/resources/application.properties` and add the following configuration:
+- Open `src/main/resources/application.properties`[application.properties](src/main/java/resources/application.properties) and add the following configuration:
   ```properties
   spring.datasource.url=jdbc:postgresql://localhost:5432/testdb
   spring.datasource.username=postgres
@@ -46,7 +46,127 @@ Contains Projects for connecting Springboot to PostGress  DB etc
       email VARCHAR(100) NOT NULL
   );
   ```
+## 3. Create Entity, Repository, Service, and Controller Layers
 
+### Entity
+- Create a package `com.example.demo.entity`.
+  - Add a class `User.java`: [Users.java](src/main/java/com/jpa/postgress/dboperations/entity/Users.java)
+    ```java
+    @Entity
+    @Table(name = "users")
+    public class User {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+    
+        private String name;
+    
+        private String email;
+    
+        // Getters and Setters
+    }
+    ``` 
+### Repository
+- Create a package `com.example.demo.repository`.
+- Add an interface `UserRepository.java`: [UsersRepo.java](src/main/java/com/jpa/postgress/dboperations/repo/UsersRepo.java)
+    ```java
+    public interface UserRepository extends JpaRepository<User, Long> {
+    }
+    ```
+### Service
+- Create a package `com.example.demo.service`.
+- Add a class `UserService.java`: [UsersService.java](src/main/java/com/jpa/postgress/dboperations/service/UsersService.java)
+    ```java
+    @Service
+    public class UserService {
+        private final UserRepository userRepository;
+    
+        public UserService(UserRepository userRepository) {
+            this.userRepository = userRepository;
+        }
+    
+        public List<User> getUsers() {
+            return userRepository.findAll();
+        }
+    
+        public User createUser(User user) {
+            return userRepository.save(user);
+        }
+    }
+    ```
+
+### Controller
+- Create a package `com.example.demo.controller`.
+- Add a class `UserController.java`: [UsersController.java](src/main/java/com/jpa/postgress/dboperations/controller/UsersController.java)
+    ```java
+    @RestController
+    @RequestMapping("/users")
+    public class UserController {
+        private final UserService userService;
+    
+        public UserController(UserService userService) {
+            this.userService = userService;
+        }
+    
+        @GetMapping
+        public List<User> getUsers() {
+            return userService.getUsers();
+        }
+    
+        @PostMapping
+        public User createUser(@RequestBody User user) {
+            return userService.createUser(user);
+        }
+    }
+    ```
+## 4. Add Swagger for API Documentation
+- Add the following dependency to `build.gradle`:
+    ```groovy
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    ```
+## 5. Create a Multi-Stage Dockerfile
+- Create a `Dockerfile` in the root directory:
+  - Add the following content:
+      ```dockerfile
+      # Build Stage
+      FROM openjdk:17-jdk-slim AS build
+      WORKDIR application
+      COPY build.gradle settings.gradle gradlew ./
+      COPY gradle ./gradle
+      RUN ./gradlew dependencies
+      COPY src ./src
+      RUN ./gradlew build
+
+      # Package Stage
+      FROM openjdk:17-jdk-slim
+      COPY --from=build /application/build/libs/demo-0.0.1-SNAPSHOT.jar demo.jar
+      ENTRYPOINT ["java", "-jar", "demo.jar"]
+      ```
+ ## 6. Manage PostgreSQL and Spring Boot Applications with Docker Compose
+- Create a `docker-compose.yml` file in the root directory:
+    - Add the following content:
+        ```yaml
+        version: '3.8'
+    
+        services:
+            db:
+            image: postgres
+            container_name: postgres
+            environment:
+                POSTGRES_DB: testdb
+                POSTGRES_USER: postgres
+                POSTGRES_PASSWORD: test
+            ports:
+                - "5432:5432"
+    
+            app:
+            build: .
+            container_name: springboot
+            depends_on:
+                - db
+            ports:
+                - "8080:8080"
+        ``` 
 ### Reference Documentation
 For further reference, please consider the following sections:
 
