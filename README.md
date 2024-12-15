@@ -166,8 +166,7 @@ Contains Projects for connecting Springboot to PostGress  DB etc
                 - db
             ports:
                 - "8080:8080"
-        ``` 
-
+        ```
 ## 6. Install JDK in Ubuntu
 - Run the following commands to install OpenJDK 17 in Ubuntu:
     ```shell
