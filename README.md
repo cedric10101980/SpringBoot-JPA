@@ -6,9 +6,9 @@ Contains Projects for connecting Springboot to PostGress  DB etc
 # Step-by-Step Guide to Create a Spring Boot Application with Flyway, Entity, Repository, Service, Controller, Swagger, Docker, and Docker Compose
 
 ## 1. Create a Spring Boot Application using Spring Initializr
-- Go to Spring Initializr.
+- Go to [Spring Initializr](https://start.spring.io/).
 - Fill in the project metadata:
-    - **Project**: Gradle Project
+    - **Project**: Gradle Groovy Project
     - **Language**: Java
     - **Spring Boot**: 3.3.6
     - **Group**: com.example
