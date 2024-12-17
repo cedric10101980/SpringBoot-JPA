@@ -5,17 +5,17 @@ COPY . .
 
 COPY zscaler.cer .
 
-# Install ca-certificates package
-RUN apt-get update && apt-get install -y ca-certificates
+# Make the Gradle wrapper executable
+RUN chmod +x gradlew
 
-# Change permissions of the .cer file to be readable by all users
-RUN chmod a+r zscaler.cer
-
-# Convert the .cer file to .pem
+# Copy the Zscaler certificate
 COPY zscaler.cer /usr/local/share/ca-certificates/zscaler.crt
 
-# Update the certificate authorities
-RUN update-ca-certificates
+# Install ca-certificates package and update the certificate authorities
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
+# Add the Zscaler certificate to the Java trust store
+RUN keytool -importcert -file /usr/local/share/ca-certificates/zscaler.crt -alias zscaler -cacerts -storepass changeit -noprompt
 
 # Use the Gradle wrapper to build the project
 RUN ./gradlew build --no-daemon --console=plain > /dev/stdout

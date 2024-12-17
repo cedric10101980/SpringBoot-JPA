@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: cedric10101980/postgressapp:latest
+    image: cedric10101980/basic-postgressdb-app:latest
 #    build:
 #      context: .
 #      dockerfile: Dockerfile

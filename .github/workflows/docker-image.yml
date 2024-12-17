@@ -32,5 +32,13 @@ jobs:
           push: true
           tags: cedric10101980/basic-mongodb-app:${{ github.ref_name }}
 
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./Basic-Postgress
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: cedric10101980/basic-postgressdb-app:${{ github.ref_name }}
+
       - name: Log out from Docker Hub
         run: docker logout
