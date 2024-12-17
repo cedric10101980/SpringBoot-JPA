@@ -181,6 +181,30 @@ Contains Projects for connecting Springboot to PostGress  DB etc
     source ~/.bashrc
     sudo keytool -importcert -alias myCA -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -file zscaler.cer
     ```
+  
+## 7. Install zscaler in colima for macos
+  Start Colima:  
+  ```shell
+  colima start
+  ```
+  Copy the Zscaler certificate to the Colima VM's home directory:  
+  ```shell 
+  scp zscaler.cer colima:~/zscaler.cer
+  ```
+  Move the certificate to the correct location with elevated privileges:  
+  ```shell 
+  colima ssh
+  sudo mkdir -p /usr/local/share/ca-certificates
+  sudo mv ~/zscaler.cer /usr/local/share/ca-certificates/zscaler.crt
+  sudo update-ca-certificates
+  exit
+  ```
+  Restart Colima:  
+  ```shell 
+  colima stop
+  colima start
+  ```
+
 ## 7. Build and Run the Application
 - Build the application using the following command:
     ```shell

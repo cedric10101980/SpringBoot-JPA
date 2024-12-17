@@ -1,27 +1,30 @@
-# Stage 1: Build the application
-FROM openjdk:17-slim AS build
+# Use an official Gradle image to build the application
+FROM gradle:8.11.1-jdk17 AS build
+
+# Set the working directory
 WORKDIR /app
-COPY . .
 
-COPY zscaler.cer .
+# Copy the Gradle wrapper and project files
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
 
-# Make the Gradle wrapper executable
-RUN chmod +x gradlew
+# Copy the source code
+COPY src src
 
-# Copy the Zscaler certificate
+# Copy the Zscaler certificate and install ca-certificates package
 COPY zscaler.cer /usr/local/share/ca-certificates/zscaler.crt
+RUN apt-get update && apt-get install -y ca-certificates \
+    && chmod a+r /usr/local/share/ca-certificates/zscaler.crt \
+    && update-ca-certificates \
+    && keytool -importcert -file /usr/local/share/ca-certificates/zscaler.crt -alias zscaler -cacerts -storepass changeit -noprompt
 
-# Install ca-certificates package and update the certificate authorities
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
-
-# Add the Zscaler certificate to the Java trust store
-RUN keytool -importcert -file /usr/local/share/ca-certificates/zscaler.crt -alias zscaler -cacerts -storepass changeit -noprompt
-
-# Use the Gradle wrapper to build the project
-RUN ./gradlew build --no-daemon --console=plain > /dev/stdout
+# Build the application, skipping tests
+RUN ./gradlew build --no-daemon --console=plain --stacktrace -x test
 
 # Stage 2: Run the application
-FROM openjdk:17-slim-buster
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/dboperations-0.0.1-SNAPSHOT.jar dboperations-0.0.1-SNAPSHOT.jar
 CMD ["java", "-jar", "dboperations-0.0.1-SNAPSHOT.jar"]

@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificat
 RUN keytool -importcert -file /usr/local/share/ca-certificates/zscaler.crt -alias zscaler -cacerts -storepass changeit -noprompt
 
 # Build the application
-RUN ./gradlew build
+RUN ./gradlew build --no-daemon --console=plain > /dev/stdout
 
 # Use an official OpenJDK image to run the application
 FROM openjdk:17-jdk-slim
