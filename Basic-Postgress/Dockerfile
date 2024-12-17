@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y ca-certificates \
 RUN ./gradlew build --no-daemon --console=plain --stacktrace -x test
 
 # Stage 2: Run the application
-FROM eclipse-temurin:17-jre-alpine
+FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/build/libs/dboperations-0.0.1-SNAPSHOT.jar dboperations-0.0.1-SNAPSHOT.jar
 CMD ["java", "-jar", "dboperations-0.0.1-SNAPSHOT.jar"]
