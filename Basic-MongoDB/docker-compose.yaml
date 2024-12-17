@@ -20,7 +20,7 @@ services:
     networks:
       - mongodb_network
   app:
-    image: cedric10101980/basic-mongodb-app:latest
+    image: cedric10101980/basic-mongodb-app:main
     container_name: app
     ports:
       - "8081:8080"
